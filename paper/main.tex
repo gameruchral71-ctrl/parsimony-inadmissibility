@@ -1,0 +1,148 @@
+\documentclass[11pt]{amsart}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\MP}{\mathrm{MP}}
+\newcommand{\ML}{\mathrm{ML}}
+\newcommand{\Prob}{\mathbb{P}}
+
+\title[Maximum parsimony is inadmissible for small trees]{Maximum parsimony is inadmissible for small phylogenetic trees: exact computer-assisted examples}
+
+\author{Uchral Nyam-Osor}
+\address{Independent}
+
+\date{October 2026}
+
+\begin{document}
+\sloppy
+\pagestyle{plain}
+
+\begin{abstract}
+A tree-reconstruction method is inadmissible if another method recovers the true tree with at least the same probability for every tree and every choice of branch lengths, and with strictly higher probability for some. In 2006 Steel conjectured that maximum parsimony (MP) and maximum likelihood (ML) are both inadmissible. We give two exact examples for MP, with ties broken uniformly at random. Under the Jukes--Cantor model with four taxa and two sites, a different tie-breaking rule dominates MP. Under the symmetric two-state model with five taxa and three sites, an explicit rule that sometimes departs from the unique MP tree dominates MP. In both cases the gain in probability is a polynomial in the edge parameters, and we certify its nonnegativity on the whole parameter cube with exact rational Bernstein coefficients. We also report computational evidence that MP is admissible for four taxa under the two-state model with up to four sites, and a dominance result for ML that is exact apart from a numerically checked tie condition. The results have not yet been independently refereed.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+Let $k$ sites evolve independently on an unrooted, fully resolved phylogenetic tree $T$ with branch lengths $\lambda$ under a finite-state Markov model. A \emph{tree-reconstruction method} $M$ maps each data set (a $k$-tuple of site patterns) to a probability distribution on trees; we write $\Prob(M=T\mid T,\lambda)$ for the probability that $M$ returns the true tree.
+
+\begin{definition}[\cite{SteelConj}]
+$M$ is \emph{inadmissible} if there is a method $M'$ with
+\[
+\Prob(M'=T\mid T,\lambda)\ \ge\ \Prob(M=T\mid T,\lambda)
+\]
+for every fully resolved tree $T$ and every vector $\lambda$ of strictly positive, finite branch lengths, with strict inequality for at least one pair $(T,\lambda)$.
+\end{definition}
+
+Steel \cite{SteelConj,SteelChallenges} posed the following conjectures, with a prize offered on his challenges page.
+
+\medskip
+\noindent\textbf{Conjecture 1.} Maximum parsimony is inadmissible.
+
+\noindent\textbf{Conjecture 2.} Maximum likelihood is inadmissible.
+\medskip
+
+The statements leave the number of taxa, the number of sites $k$ and the treatment of ties unspecified. We treat MP as returning each most-parsimonious tree with equal probability (if ties counted as failures, MP would be trivially inadmissible). Throughout, a statement ``MP is inadmissible for $(n,k,\text{model})$'' refers to $n$ taxa, $k$ sites and that model. To our knowledge, no proof or disproof of either conjecture had been published as of October 2026; the conjecture is still listed as open in \cite{SteelChallenges}.
+
+\begin{theorem}\label{thm:jc}
+Under the Jukes--Cantor model, MP (uniform tie-breaking) is inadmissible for $4$ taxa and $2$ sites. A dominating method is obtained from MP by changing only how ties are broken.
+\end{theorem}
+
+\begin{theorem}\label{thm:cfn}
+Under the symmetric two-state (CFN) model, MP (uniform tie-breaking) is inadmissible for $5$ taxa and $3$ sites. The dominating method sometimes returns a tree other than the unique MP tree.
+\end{theorem}
+
+Theorem~\ref{thm:jc} establishes Conjecture~1 in the Jukes--Cantor setting of \cite{SteelConj} for the smallest nontrivial size. Whether such examples settle Conjecture~1 as intended depends on the quantifiers, which the statement does not fix; the computations in Remark~\ref{rem:cfn4} suggest that MP is not inadmissible for every size and model. Background on parsimony, likelihood and their consistency can be found in \cite{Fel78,SS03,Steel16,TS97}.
+
+\section{Method of proof}\label{sec:method}
+
+Fix a tree $T$ and write $\theta_e\in(0,1)$ for the parameter of edge $e$: $\theta_e=e^{-4t_e/3}$ under Jukes--Cantor and $\theta_e=e^{-2t_e}$ under CFN, where $t_e$ is the branch length. Positive finite branch lengths correspond exactly to $\theta\in(0,1)^E$. The probability of a site pattern is a polynomial in $\theta$ with rational coefficients, of degree at most one in each $\theta_e$.
+
+Let $M^\ast$ agree with MP except on a finite list of data sets. Then
+\[
+\Delta_T(\theta):=\Prob(M^\ast=T\mid T,\theta)-\Prob(\MP=T\mid T,\theta)=\sum_{D}\bigl(M^\ast(D)(T)-\MP(D)(T)\bigr)\Prob(D\mid T,\theta)
+\]
+is a polynomial, the sum running over the changed data sets $D$. We expand $\Delta_T$ in the tensor Bernstein basis of the unit cube. If all Bernstein coefficients are $\ge0$ and not all are $0$, then $\Delta_T\ge0$ on $[0,1]^E$ and $\Delta_T$ is not the zero polynomial, so $\Delta_T>0$ on a dense open subset of $(0,1)^E$. Checking this for every tree $T$ proves that $M^\ast$ dominates MP. All arithmetic is exact (Python \texttt{fractions} and \texttt{sympy}); site-pattern probabilities are computed by summing over internal states, and parsimony scores by brute force over internal states, independently of the search code that found the rules.
+
+\section{Four taxa, two sites, Jukes--Cantor}\label{sec:jc}
+
+The three trees on leaves $\{a,b,c,d\}$ are $ab|cd$, $ac|bd$, $ad|bc$. Call a site \emph{constant} if all leaves agree; a \emph{singleton at $i$} if exactly leaf $i$ differs from the other three, which agree; and of type \emph{$xxyz$ with pair $\{i,j\}$} if leaves $i,j$ agree and the other two leaves carry two further distinct states. For each two-site data set in Table~\ref{tab:jc}, MP ties all three trees and returns each with probability $1/3$; $M^\ast$ replaces this by the distribution shown. Elsewhere $M^\ast=\MP$.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+two-site data & distribution of $M^\ast$\\
+\midrule
+constant + $xxyz$ with pair $\{a,b\}$ & $2/3$ on $ab|cd$, $1/6$ on each other tree\\
+singletons at two different leaves $i,j$ & $1/9$ on $ij|kl$, $4/9$ on each other tree\\
+$xxyz$ with pairs $\{a,b\}$ and $\{a,c\}$ & $7/18$ on $ad|bc$, $11/36$ on each other tree\\
+$xxyz$ with pairs $\{a,b\}$ and $\{c,d\}$ & $7/18$ on $ab|cd$, $11/36$ on each other tree\\
+\bottomrule
+\end{tabular}
+\caption{The rule $M^\ast$ of Theorem~\ref{thm:jc}, up to relabelling leaves and states.}\label{tab:jc}
+\end{table}
+
+\begin{proof}[Proof of Theorem~\ref{thm:jc}]
+For each of the three trees, $\Delta_T$ is a polynomial in five variables. Its Bernstein coefficients on $[0,1]^5$ have minimum $0$ and maximum $1/16$ (script \texttt{verify\_jc4.py}). By Section~\ref{sec:method}, $M^\ast$ dominates MP.
+\end{proof}
+
+The rule uses sites that are parsimony-uninformative but not likelihood-uninformative. The largest gain is about $2.1$ percentage points in the probability of recovering the true tree, and the average gain over random branch lengths is about $0.3$ points. An independent Monte Carlo simulation (\texttt{simulate\_jc4.py}) agrees.
+
+\section{Five taxa, three sites, CFN}\label{sec:cfn}
+
+Under CFN a site is determined, up to swapping the two states, by the split it induces; we name it by the smaller side, so it is \emph{constant}, a \emph{singleton} $\{u\}$, or a \emph{pair} $\{a,b\}$. A tree on five leaves is determined by its two cherries; write $X|Y$ for the tree with cherries $X$ and $Y$. $M^\ast$ agrees with MP except on the following three-site data sets (leaves $a,b,c,\dots$ distinct):
+\begin{enumerate}
+\item[(A)] a constant site and pairs $\{a,b\},\{a,c\}$; with $\{d,e\}$ the remaining leaves, return $ab|de$ or $ac|de$ with probability $1/2$ each (MP ties six trees);
+\item[(B)] singletons $\{u\},\{v\}$ and a pair $P$ with $u\in P$, $v\notin P$; with $y,z$ the remaining leaves, return $P|vy$ or $P|vz$ with probability $1/2$ each (MP ties the three trees with cherry $P$);
+\item[(C)] a singleton $\{u\}$ and pairs $\{a,b\},\{a,c\}$ with $u\notin\{a,b,c\}$, $e$ the fifth leaf; return $ab|ue$ and $ac|ue$ with probability $1/3$ each and $ab|ce$ and $ac|be$ with probability $1/6$ each (MP ties six trees);
+\item[(D)] three distinct pairs $P,Q,R$ with $Q\cap R=\emptyset$ and $|P\cap Q|=|P\cap R|=1$, $e$ the leaf in none of them; return $Q|R$ (the unique MP tree) with probability $2/3$, and $Q\,|\,\{e\}\cup(P\cap R)$ and $R\,|\,\{e\}\cup(P\cap Q)$ with probability $1/6$ each.
+\end{enumerate}
+In total $M^\ast$ differs from MP on 210 three-site data sets (unordered, up to complementing states).
+
+\begin{proof}[Proof of Theorem~\ref{thm:cfn}]
+For each of the fifteen trees, $\Delta_T$ is a polynomial in seven variables whose Bernstein coefficients on $[0,1]^7$ have minimum $0$ and maximum about $0.0104$ (script \texttt{verify\_cfn5.py}). In addition $\Delta_T>0$ at an interior test point for every $T$.
+\end{proof}
+
+Rule (D) departs from a unique MP tree, so $M^\ast$ is not merely a change of tie-breaking.
+
+\section{Further computations (not proofs)}
+
+\begin{remark}[four taxa under CFN]\label{rem:cfn4}
+For four taxa under CFN we searched for dominating rules by linear programming over equivariant rules on site-pattern data, for $k=2,3,4$ sites. No rule dominating MP was found. This suggests, but does not prove, that whether MP is inadmissible depends on the model and the size of the problem.
+\end{remark}
+
+\begin{remark}[other tie-breaking rules]
+Theorems~\ref{thm:jc} and~\ref{thm:cfn} concern uniform tie-breaking. The same LP search found a dominating rule for each of 8 random alternative tie-breaking rules under Jukes--Cantor (4 taxa, 2 sites) and 12 under CFN (5 taxa, 4 sites). We have no proof for all tie-breaking rules.
+\end{remark}
+
+\begin{remark}[maximum likelihood]
+Under CFN with four taxa and four sites, a rule $M^\ast$ that differs from ML on three kinds of data sets dominates ML, with exact Bernstein certificates, \emph{provided} that ML ties all three trees on those data sets. For each of these data sets every tree attains the same likelihood at an explicit boundary point (verified exactly), and 400 random restarts of local optimisation per tree never exceeded it, but we have not proved that this value is the supremum. The maximisers lie on curves in the boundary of the parameter space. Closing this gap would establish Conjecture~2 in this setting. Under Jukes--Cantor the search finds a rule dominating ML for four taxa and three sites, again relying on ML ties.
+\end{remark}
+
+\section*{Code}
+All scripts are at \url{https://github.com/gameruchral71-ctrl/parsimony-inadmissibility}. \texttt{verify\_jc4.py} runs in seconds and \texttt{verify\_cfn5.py} in a few minutes (Python~3 with \texttt{sympy}). The ML computation is in \texttt{verify\_ml\_cfn4.py} and the LP search in \texttt{search/}.
+
+\section*{Use of AI and contributions}
+The mathematical arguments, the code and the text of this paper were produced by Claude, an AI model made by Anthropic, in October 2026. The author initiated and directed the project and is responsible for this submission. The idea of working on a problem in biology was proposed by Tugsuu. In line with arXiv policy, the AI model is not listed as an author. The results have not yet been checked by an independent specialist; we welcome corrections.
+
+\begin{thebibliography}{99}
+\bibitem{Fel78} J.~Felsenstein, \emph{Cases in which parsimony or compatibility methods will be positively misleading}, Syst.\ Zool.\ \textbf{27} (1978), 401--410.
+\bibitem{SS03} C.~Semple and M.~Steel, \emph{Phylogenetics}, Oxford University Press, 2003.
+\bibitem{SteelConj} M.~Steel, \emph{Inadmissibility conjectures} (2006), \url{https://www.math.canterbury.ac.nz/~m.steel/Non_UC/files/research/conjecture2.pdf}.
+\bibitem{SteelChallenges} M.~Steel, \emph{Phylogenetics: challenges and conjectures}, \url{https://www.math.canterbury.ac.nz/~m.steel/challenges.shtml}.
+\bibitem{Steel16} M.~Steel, \emph{Phylogeny: Discrete and Random Processes in Evolution}, SIAM, 2016.
+\bibitem{TS97} C.~Tuffley and M.~Steel, \emph{Links between maximum likelihood and maximum parsimony under a simple model of site substitution}, Bull.\ Math.\ Biol.\ \textbf{59} (1997), 581--607.
+\end{thebibliography}
+
+\end{document}

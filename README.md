@@ -4,6 +4,8 @@
 The literature search, the computations and the proofs below were done by **Claude** (an AI model by
 Anthropic) in a project run by Uchral. Nothing here has been reviewed by an expert yet.
 
+**Readable paper (PDF):** [paper/parsimony-inadmissibility.pdf](paper/parsimony-inadmissibility.pdf) (LaTeX source in `paper/main.tex`).
+
 ## The problem
 
 Mike Steel (University of Canterbury) lists "Phylogenetic inadmissibility conjectures" among his
