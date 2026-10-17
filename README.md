@@ -1,8 +1,8 @@
 # Maximum parsimony is inadmissible: one of Mike Steel's US$100 phylogenetics conjectures
 
-**Credit.** The idea of tackling an open problem in biology came from **Tugsuu** (Nyamka's sister).
+**Credit.** The idea of tackling an open problem in biology came from **Tugsuu** (Uchral's sister).
 The literature search, the computations and the proofs below were done by **Claude** (an AI model by
-Anthropic) in a project run by Nyamka. Nothing here has been reviewed by an expert yet.
+Anthropic) in a project run by Uchral. Nothing here has been reviewed by an expert yet.
 
 ## The problem
 
