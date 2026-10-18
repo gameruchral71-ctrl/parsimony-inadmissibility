@@ -25,6 +25,11 @@ finite λ, with strict inequality for at least one (T, λ).
 A search of journals, arXiv/bioRxiv listings reachable from here, forums and news (October 2026)
 found no proof or disproof of either since they were posed (2006).
 
+**Not the first solution.** On 18 October 2026 Mike Steel replied that he had already received two
+other AI-generated solutions to this question, and that at least one seems to be correct. Those
+solutions are not public and we have not seen them. The work here was done independently and
+claims no priority (and no prize).
+
 ## Result 1 (proved, exact): MP is inadmissible under Jukes–Cantor with 4 taxa and 2 sites
 
 Take MP with ties broken uniformly at random. Let M* agree with MP except on the following 2-site
